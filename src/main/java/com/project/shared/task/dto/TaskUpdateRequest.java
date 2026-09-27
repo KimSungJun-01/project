@@ -1,20 +1,13 @@
 package com.project.shared.task.dto;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
-public class TaskUpdateRequest {
-    @NotBlank(message = "제목은 비어 있을 수 없습니다.")
-    @Size(max = 100, message = "제목은 100자 이하여야 합니다.")
-    private String title;
-
-    private String description;
-
-    @NotNull(message = "완료 여부는 필수입니다.")
-    private Boolean complete;
+public record TaskUpdateRequest(
+        @NotBlank(message = "제목은 비어 있을 수 없습니다.")
+        @Size(max = 100, message = "제목은 100자 이하여야 합니다.")
+        String title,
+        String description,
+        boolean complete
+) {
 }

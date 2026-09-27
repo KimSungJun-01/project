@@ -1,27 +1,25 @@
 package com.project.shared.task.dto;
 
 import com.project.boundedContext.task.entity.Task;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class TaskResponse {
-    private int id;
-    private String title;
-    private String description;
-    private boolean complete;
-    private String createDate;
-    private String modifyDate;
+import java.time.LocalDateTime;
 
+public record TaskResponse(
+        int id,
+        String title,
+        String description,
+        boolean complete,
+        LocalDateTime createDate,
+        LocalDateTime modifyDate
+) {
     public static TaskResponse from(Task task) {
         return new TaskResponse(
                 task.getId(),
                 task.getTitle(),
                 task.getDescription(),
                 task.isComplete(),
-                task.getCreateDate().toString(),
-                task.getModifyDate().toString()
+                task.getCreateDate(),
+                task.getModifyDate()
         );
     }
 }

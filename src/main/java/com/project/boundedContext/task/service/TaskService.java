@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -19,47 +20,45 @@ public class TaskService {
 
     @Transactional
     public TaskResponse createTask(TaskCreateRequest request) {
-        Task task = new Task(request.getTitle(), request.getDescription());
-        Task savedTask = taskRepository.save(task);
-        return TaskResponse.from(savedTask);
+        return TaskResponse.from(taskRepository.save(new Task(request.title(), request.description())));
     }
 
     @Transactional(readOnly = true)
     public List<TaskResponse> getAllTasks() {
-        return taskRepository.findAll()
-                .stream()
+        return taskRepository.findAll().stream()
                 .map(TaskResponse::from)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public TaskResponse getTaskById(int id) {
-        Task task = taskRepository.findTaskById(id)
-                .orElseThrow(() -> new DomainException("404-1", "존재하지 않는 할 일입니다."));
-        return TaskResponse.from(task);
+        return TaskResponse.from(findTask(id));
     }
 
     @Transactional
     public TaskResponse updateTask(int id, TaskUpdateRequest request) {
-        Task task = taskRepository.findTaskById(id)
-                .orElseThrow(() -> new DomainException("404-1", "존재하지 않는 할 일입니다."));
-        task.update(request.getTitle(), request.getDescription(), request.getComplete());
+        Task task = findTask(id);
+        task.update(request.title(), request.description(), request.complete());
         return TaskResponse.from(task);
     }
 
     @Transactional
     public TaskResponse changeComplete(int id, boolean complete) {
-        Task task = taskRepository.findTaskById(id)
-                .orElseThrow(() -> new DomainException("404-1", "존재하지 않는 할 일입니다."));
+        Task task = findTask(id);
         task.changeComplete(complete);
         return TaskResponse.from(task);
     }
 
     @Transactional
-    public TaskResponse deleteTask(int id) {
-        Task task = taskRepository.findTaskById(id)
-                .orElseThrow(() -> new DomainException("404-1", "존재하지 않는 할 일입니다."));
-        taskRepository.delete(task);
-        return TaskResponse.from(task);
+    public void deleteTask(int id) {
+        taskRepository.delete(findTask(id));
+    }
+
+    private Task findTask(int id) {
+        return taskRepository.findById(id)
+                .orElseThrow(() -> new DomainException(
+                        "TASK_NOT_FOUND",
+                        "존재하지 않는 할 일입니다."
+                ));
     }
 }

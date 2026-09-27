@@ -53,12 +53,12 @@ http://localhost:8080
 
 | 기능 | 메서드 | 주소 | 요청 본문 | 성공 상태 |
 |---|---|---|---|---|
-| 할 일 생성 | `POST` | `/api/v1/tasks` | 필요 | `200 OK` |
+| 할 일 생성 | `POST` | `/api/v1/tasks` | 필요 | `201 Created` |
 | 할 일 목록 조회 | `GET` | `/api/v1/tasks` | 없음 | `200 OK` |
 | 할 일 단건 조회 | `GET` | `/api/v1/tasks/{id}` | 없음 | `200 OK` |
 | 할 일 수정 | `PUT` | `/api/v1/tasks/{id}` | 필요 | `200 OK` |
 | 완료 여부 변경 | `PATCH` | `/api/v1/tasks/{id}/complete?complete={true\|false}` | 없음 | `200 OK` |
-| 할 일 삭제 | `DELETE` | `/api/v1/tasks/{id}` | 없음 | `200 OK` |
+| 할 일 삭제 | `DELETE` | `/api/v1/tasks/{id}` | 없음 | `204 No Content` |
 
 할 일의 `id`는 URL의 경로 변수로 전달합니다.
 
@@ -70,7 +70,7 @@ HTTP 메서드는 REST 관례에 따라 다음과 같이 선택했습니다.
 - `PATCH`: 완료 여부만 일부 수정하기 위해 사용합니다.
 - `DELETE`: 할 일을 삭제하기 위해 사용합니다.
 
-현재 생성과 삭제 API는 처리된 할 일 정보를 응답 본문으로 반환하도록 구현했기 때문에 성공 상태 코드로 `200 OK`를 사용했습니다.
+생성 API는 새 리소스가 만들어졌음을 나타내는 `201 Created`를 사용하고, 삭제 API는 반환할 본문이 없으므로 `204 No Content`를 사용합니다.
 
 ## 4. API 명세
 
@@ -92,7 +92,7 @@ Content-Type: application/json
 
 #### 응답
 
-상태 코드: `200 OK`
+상태 코드: `201 Created`
 
 ```json
 {
@@ -238,7 +238,9 @@ DELETE /api/v1/tasks/1
 
 #### 응답
 
-상태 코드: `200 OK`
+상태 코드: `204 No Content`
+
+응답 본문은 없습니다.
 
 ```json
 {
@@ -356,7 +358,7 @@ curl -i -X POST http://localhost:8080/api/v1/tasks \
 #### 응답
 
 ```http
-HTTP/1.1 200
+HTTP/1.1 201
 Content-Type: application/json
 ```
 
@@ -437,9 +439,10 @@ curl -i -X DELETE http://localhost:8080/api/v1/tasks/1
 #### 응답
 
 ```http
-HTTP/1.1 200
-Content-Type: application/json
+HTTP/1.1 204
 ```
+
+응답 본문은 없습니다.
 
 ```json
 {
